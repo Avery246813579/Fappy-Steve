@@ -6,8 +6,8 @@ canvas.height = 512;
 
 var images = ['background', 'bird', 'pipebottom', 'pipetop'];
 var imgMap = {};
-for(var i = 0; i < images.length; i++){
-    (function() {
+for (var i = 0; i < images.length; i++) {
+    (function () {
         var img = new Image();
         img.src = "assets/images/" + images[i] + ".png";
 
@@ -21,21 +21,28 @@ for(var i = 0; i < images.length; i++){
 }
 
 var globalID;
-var pipes = [{
-    X: 100,
-    Y: 20
-}];
+var pipes = [];
 
-var toCreate = 0;
-function draw(){
-    if(Object.keys(imgMap).length != 4){
+var toCreate = 60;
+function draw() {
+    if (Object.keys(imgMap).length != 4) {
         globalID = requestAnimationFrame(draw);
         return;
     }
 
     context.drawImage(imgMap['BACKGROUND'], 0, 0, 288, 512);
+    toCreate++;
 
-    for(var key in pipes){
+    if (toCreate > 60) {
+        toCreate = 0;
+
+        pipes.push({
+            X: 288,
+            Y: Math.floor(Math.random() * 500)
+        });
+    }
+
+    for (var key in pipes) {
         var pipe = pipes[key];
 
         context.drawImage(imgMap['PIPETOP'], pipe.X, pipe.Y - 512, 40, 512);
@@ -43,7 +50,7 @@ function draw(){
 
         pipe.X -= 4;
 
-        if(pipe.x + 40 < 0){
+        if (pipe.x + 40 < 0) {
             delete pipes[key];
         }
     }
