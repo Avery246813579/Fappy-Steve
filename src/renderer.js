@@ -14,9 +14,13 @@ var imgMap = {};
 //    Y: 250
 //};
 
-var birds = [
-    new Bird()
-];
+var birds = [];
+
+for (var j = 0; j < 5; j++) {
+    birds.push(new Bird());
+}
+
+birds.push(new Bird(70, 90));
 
 window.onmousemove = function (event) {
     //bird.Y = event.y;
@@ -61,6 +65,7 @@ var globalID;
 var pipes = [];
 
 var toCreate = 45;
+var generation = 0;
 
 var lastTime = new Date().getTime(), tick = new Date().getTime();
 var delta = 0, targetUps = 1000 / 60, frames = 0, updates = 0;
@@ -73,16 +78,14 @@ function draw() {
 
             context.drawImage(imgMap['PIPETOP'], pipe.X, pipe.Y - 512, 40, 512);
             context.drawImage(imgMap['PIPEBOTTOM'], pipe.X, pipe.Y + 100, 40, 512);
-
-            pipe.X -= 2;
-
-            if (pipe.X + 40 < 0) {
-                pipes.splice(key, 1);
-            }
         }
     }
 
     for (var i = 0; i < birds.length; i++) {
+        if (birds[i].isDead()) {
+            continue;
+        }
+
         birds[i].draw(context);
     }
 }
@@ -106,8 +109,11 @@ function update() {
         var location = bird.location;
 
         bird.tick();
+
+        //Make this first
         if (Object.keys(pipes).length > 0) {
             var closestPipe = pipes[Object.keys(pipes)[0]];
+
 
             if (location.X > closestPipe.X + 45) {
                 closestPipe = pipes[Object.keys(pipes)[1]];
@@ -115,10 +121,15 @@ function update() {
 
             var d = Math.sqrt((closestPipe.X - location.X) * (closestPipe.X - location.X) + (closestPipe.Y - location.Y) * (closestPipe.Y - location.Y));
 
-            console.log(d);
-            if (d > 90 && location.Y - 24 > closestPipe.Y) {
+            if (d > bird.strength.MAX && location.Y - 24 > closestPipe.Y) {
                 bird.jump();
-            } else  if (d > 70 && d < 90 && location.X + 34 > closestPipe.X) {
+            } else if (d > bird.strength.MIN && d < bird.strength.MAX && location.X + 34 > closestPipe.X) {
+                bird.jump();
+            }
+        } else {
+            var jump = Math.floor(Math.random() * 15);
+
+            if(jump == 0){
                 bird.jump();
             }
         }
@@ -127,6 +138,18 @@ function update() {
     for (var key in pipes) {
         if (pipes.hasOwnProperty(key)) {
             var pipe = pipes[key];
+
+            if (pipe.X + 40 < 0) {
+                pipes.splice(key, 1);
+                continue;
+            }
+
+            pipe.X -= 2;
+
+            if (!isAliveBird()) {
+                nextGeneration();
+                return;
+            }
 
             for (var j = 0; j < birds.length; j++) {
                 (function () {
@@ -137,11 +160,11 @@ function update() {
                     if (location.X + 34 > pipe.X && location.X < pipe.X + 40) {
                         if (location.Y < pipe.Y) {
                             if (!GOD_MODE) {
-                                birds.splice(j, 1);
+                                bird.dead = true;
                             }
                         } else if (location.Y + 24 > pipe.Y + 100) {
                             if (!GOD_MODE) {
-                                birds.splice(j, 1);
+                                bird.dead = true;
                             }
                         }
                     }
@@ -182,10 +205,29 @@ function render() {
     globalID = requestAnimationFrame(render);
 }
 
+function isAliveBird() {
+    for (var i = 0; i < birds.length; i++) {
+        if (!birds[i].isDead()) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 function clearCanvas() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.beginPath();
+}
+
+function nextGeneration() {
+    generation++;
+
+    for (var i = 0; i < birds.length; i++) {
+        birds[i].reset();
+    }
+
+    pipes = [];
 }
 
 globalID = requestAnimationFrame(render);

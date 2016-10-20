@@ -3,6 +3,8 @@ var TERMINAL_VELOCITY = 25;
 var GRAVITY = .5;
 
 function Bird() {
+    this.dead = false;
+
     this.location = {
         X: 100,
         Y: 50
@@ -10,6 +12,23 @@ function Bird() {
 
     this.velocity = {
         Y: 0
+    };
+
+    this.strength = {
+        MIN: 70,
+        MAX: 90
+    };
+
+    this.reset = function(){
+        this.dead = false;
+        this.location.X = 100;
+        this.velocity.Y = 0;
+
+        self.location.Y = Math.floor(Math.random() * 512);
+    };
+
+    this.isDead = function(){
+        return this.dead;
     };
 
     this.jump = function () {
@@ -24,8 +43,8 @@ function Bird() {
         this.location.Y += this.velocity.Y;
         this.velocity.Y += GRAVITY;
 
-        if (this.velocity.Y > 5) {
-            this.velocity.Y = 5;
+        if (this.velocity.Y > 7.5) {
+            this.velocity.Y = 7.5;
         }
 
         if (Math.abs(this.velocity.Y) > TERMINAL_VELOCITY) {
@@ -56,6 +75,20 @@ function Bird() {
         context.restore();
     };
 
-    (function Constructor(first) {
+    (function Constructor(min, max) {
+        var self = this;
+
+        self.location.Y = Math.floor(Math.random() * 512);
+
+        if(typeof min == "undefined" || typeof max == "undefined") {
+            self.strength.MIN = Math.floor(Math.random() * 250);
+            self.strength.MAX = Math.floor(Math.random() * 250);
+            return;
+        }
+
+        self.strength.MIN = min;
+        self.strength.MAX = max;
+
+        console.dir(self.strength);
     }).apply(this, arguments);
 }
