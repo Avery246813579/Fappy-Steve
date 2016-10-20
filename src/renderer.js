@@ -33,7 +33,7 @@ window.onclick = function (event) {
     }
 };
 
-window.on = function (event){
+window.on = function (event) {
     for (var b = 0; b < birds.length; b++) {
         (function () {
             var bird = birds[b];
@@ -85,11 +85,6 @@ function draw() {
     for (var i = 0; i < birds.length; i++) {
         birds[i].draw(context);
     }
-
-    //context.save();
-    //context.drawImage(imgMap['BIRD'], bird.X, bird.Y);
-    //context.restore();
-
 }
 
 var GOD_MODE = false;
@@ -107,8 +102,19 @@ function update() {
 
     for (var i = 0; i < birds.length; i++) {
         var bird = birds[i];
+        var location = bird.location;
 
         bird.tick();
+        if (Object.keys(pipes).length > 0) {
+            var closestPipe = pipes[Object.keys(pipes)[0]];
+
+            var d = Math.sqrt((closestPipe.X - location.X) * (closestPipe.X - location.X) + (closestPipe.Y - location.Y) * (closestPipe.Y - location.Y));
+
+            console.log(d);
+            if (d > 85 && location.Y > closestPipe.Y) {
+                bird.jump();
+            }
+        }
     }
 
     for (var key in pipes) {
@@ -120,21 +126,20 @@ function update() {
                     var bird = birds[j];
                     var location = bird.location;
 
+                    //Hitbox
                     if (location.X + 34 > pipe.X && location.X < pipe.X + 40) {
-
                         if (location.Y < pipe.Y) {
-                            if(!GOD_MODE){
+                            if (!GOD_MODE) {
                                 birds.splice(j, 1);
                             }
-                        }else if (location.Y + 24 > pipe.Y + 100) {
-                            if(!GOD_MODE){
+                        } else if (location.Y + 24 > pipe.Y + 100) {
+                            if (!GOD_MODE) {
                                 birds.splice(j, 1);
                             }
                         }
                     }
                 })();
             }
-
         }
     }
 }
