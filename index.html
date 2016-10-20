@@ -8,6 +8,13 @@
         * {
             padding: 0;
             margin: 0;
+            cursor: default;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -22,16 +29,26 @@
 </head>
 <body>
 
-<canvas id="canvas" style="width: 288px; height: 512px">
+<canvas id="canvas" style="width: 288px; height: 512px; float: left;">
 
 </canvas>
 
-<br><br><br><br><br>
+<div style="float: left; padding-left: 25px; padding-top: 25px;">
+    <div id="FPS">
+        FPS: ~
+    </div>
 
-<div>
-    Made by Steven Wood
+    <div id="UPDATES">
+        UPDATES: ~
+    </div>
+
+    <br>
+
+    Made By Avery Durrant
 </div>
 
+
+<script src="src/Bird.js"></script>
 <script src="renderer.js"></script>
 </body>
 </html>

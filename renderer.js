@@ -1,19 +1,47 @@
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
+var FPS = document.getElementById('FPS');
+var UPDATES = document.getElementById('UPDATES');
+
 canvas.width = 288;
 canvas.height = 512;
 
 var images = ['background', 'bird', 'pipebottom', 'pipetop'];
 var imgMap = {};
-var bird = {
-    X: 100,
-    Y: 250
+//var bird = {
+//    X: 100,
+//    Y: 250
+//};
+
+var birds = [
+    new Bird()
+];
+
+window.onmousemove = function (event) {
+    //bird.Y = event.y;
+    //console.dir(event.y);
 };
 
-window.onmousemove = function(event){
-    // bird.Y = event.y;
-}
+window.onclick = function (event) {
+    for (var b = 0; b < birds.length; b++) {
+        (function () {
+            var bird = birds[b];
+
+            bird.jump();
+        })();
+    }
+};
+
+window.on = function (event){
+    for (var b = 0; b < birds.length; b++) {
+        (function () {
+            var bird = birds[b];
+
+            bird.jump();
+        })();
+    }
+};
 
 for (var i = 0; i < images.length; i++) {
     (function () {
@@ -32,59 +60,121 @@ for (var i = 0; i < images.length; i++) {
 var globalID;
 var pipes = [];
 
-var toCreate = 60;
+var toCreate = 0;
+
+var lastTime = new Date().getTime(), tick = new Date().getTime();
+var delta = 0, targetUps = 1000 / 60, frames = 0, updates = 0;
 function draw() {
-    if (Object.keys(imgMap).length != 4) {
-        globalID = requestAnimationFrame(draw);
-        return;
+    context.drawImage(imgMap['BACKGROUND'], 0, 0, 288, 512);
+
+    for (var key in pipes) {
+        if (pipes.hasOwnProperty(key)) {
+            var pipe = pipes[key];
+
+            context.drawImage(imgMap['PIPETOP'], pipe.X, pipe.Y - 512, 40, 512);
+            context.drawImage(imgMap['PIPEBOTTOM'], pipe.X, pipe.Y + 100, 40, 512);
+
+            pipe.X -= 2;
+
+            if (pipe.x + 40 < 0) {
+                delete pipes[key];
+            }
+        }
     }
 
-    context.drawImage(imgMap['BACKGROUND'], 0, 0, 288, 512);
+    for (var i = 0; i < birds.length; i++) {
+        birds[i].draw(context);
+    }
+
+    //context.save();
+    //context.drawImage(imgMap['BIRD'], bird.X, bird.Y);
+    //context.restore();
+
+}
+
+var GOD_MODE = false;
+function update() {
     toCreate++;
 
-    if (toCreate > 60) {
+    if (toCreate > 90) {
         toCreate = 0;
 
         pipes.push({
             X: 288,
-            Y: Math.floor(Math.random() * 512)
+            Y: Math.floor(Math.random() * 400)
         });
     }
 
-    for (var key in pipes) {
-        var pipe = pipes[key];
+    for (var i = 0; i < birds.length; i++) {
+        var bird = birds[i];
 
-        context.drawImage(imgMap['PIPETOP'], pipe.X, pipe.Y - 512, 40, 512);
-        context.drawImage(imgMap['PIPEBOTTOM'], pipe.X, pipe.Y + 100, 40, 512);
-
-        if(bird.X + 34 > pipe.X && bird.X < pipe.X + 40){
-            if(bird.Y < pipe.Y){
-                return;
-            }
-
-            if(bird.Y + 24 > pipe.Y + 100) {
-                return;
-            }
-        }
-
-        pipe.X -= 4;
-
-        if (pipe.x + 40 < 0) {
-            delete pipes[key];
-        }
+        bird.tick();
     }
 
-    context.save();
-    context.drawImage(imgMap['BIRD'], bird.X, bird.Y);
-    context.restore();
+    for (var key in pipes) {
+        if (pipes.hasOwnProperty(key)) {
+            var pipe = pipes[key];
 
-    globalID = requestAnimationFrame(draw);
+            for (var j = 0; j < birds.length; j++) {
+                (function () {
+                    var bird = birds[j];
+                    var location = bird.location;
+
+                    if (location.X + 34 > pipe.X && location.X < pipe.X + 40) {
+
+                        if (location.Y < pipe.Y) {
+                            if(!GOD_MODE){
+                                birds.splice(j, 1);
+                            }
+                        }else if (location.Y + 24 > pipe.Y + 100) {
+                            if(!GOD_MODE){
+                                birds.splice(j, 1);
+                            }
+                        }
+                    }
+                })();
+            }
+
+        }
+    }
 }
+
+function render() {
+    if (Object.keys(imgMap).length != 4) {
+        globalID = requestAnimationFrame(render);
+        return;
+    }
+
+    var now = new Date().getTime();
+    delta += (now - lastTime) / targetUps;
+    lastTime = now;
+
+    if (delta >= 1) {
+        updates++;
+        delta--;
+
+        update();
+    }
+
+    draw();
+    frames++;
+
+    if (now - tick > 1000) {
+        tick = now;
+        FPS.innerHTML = "FPS: " + frames;
+        UPDATES.innerHTML = "UPDATES: " + updates;
+        frames = 0;
+        updates = 0;
+    }
+
+    globalID = requestAnimationFrame(render);
+}
+
 
 function clearCanvas() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.beginPath();
 }
 
-globalID = requestAnimationFrame(draw);
+globalID = requestAnimationFrame(render);
 
