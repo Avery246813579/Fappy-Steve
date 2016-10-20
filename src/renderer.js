@@ -3,6 +3,9 @@ var context = canvas.getContext('2d');
 
 var FPS = document.getElementById('FPS');
 var UPDATES = document.getElementById('UPDATES');
+var GEN = document.getElementById('GEN');
+var SCORE = document.getElementById('SCORE');
+var score = 1;
 
 canvas.width = 288;
 canvas.height = 512;
@@ -15,12 +18,13 @@ var imgMap = {};
 //};
 
 var birds = [];
+var genBirds;
 
-for (var j = 0; j < 5; j++) {
+for (var j = 0; j < 25; j++) {
     birds.push(new Bird());
 }
 
-birds.push(new Bird(70, 90));
+//birds.push(new Bird(70, 90));
 
 window.onmousemove = function (event) {
     //bird.Y = event.y;
@@ -93,6 +97,7 @@ function draw() {
 var GOD_MODE = false;
 function update() {
     toCreate++;
+    score++;
 
     if (toCreate > 90) {
         toCreate = 0;
@@ -103,10 +108,16 @@ function update() {
         });
     }
 
+    SCORE.innerHTML = "Score: " + score;
+
     //Our magic number is 90 and 70, but computer has to find that.
     for (var i = 0; i < birds.length; i++) {
         var bird = birds[i];
         var location = bird.location;
+
+        if (bird.isDead()) {
+            continue;
+        }
 
         bird.tick();
 
@@ -129,7 +140,7 @@ function update() {
         } else {
             var jump = Math.floor(Math.random() * 15);
 
-            if(jump == 0){
+            if (jump == 0) {
                 bird.jump();
             }
         }
@@ -152,6 +163,10 @@ function update() {
             }
 
             for (var j = 0; j < birds.length; j++) {
+                if (birds[j].isDead()) {
+                    continue;
+                }
+
                 (function () {
                     var bird = birds[j];
                     var location = bird.location;
@@ -160,10 +175,12 @@ function update() {
                     if (location.X + 34 > pipe.X && location.X < pipe.X + 40) {
                         if (location.Y < pipe.Y) {
                             if (!GOD_MODE) {
+                                bird.addScore(score);
                                 bird.dead = true;
                             }
                         } else if (location.Y + 24 > pipe.Y + 100) {
                             if (!GOD_MODE) {
+                                bird.addScore(score);
                                 bird.dead = true;
                             }
                         }
@@ -222,12 +239,45 @@ function clearCanvas() {
 
 function nextGeneration() {
     generation++;
+    score = 0;
+
+    //Every third generation we take the top 5 scorers and we create 4 children for each parent
+    if (generation % 2 == 0) {
+        genBirds = birds.splice(0);
+
+        sort();
+
+        for(var j = 0; j < 5; j++){
+            var bird = genBirds[j];
+            console.log(bird.score + " " + bird.strength.MIN + " " + bird.strength.MAX);
+
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 20 - 10) , MAX: bird.strength.MAX + Math.floor(Math.random() * 20 - 10)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 20 - 10), MAX: bird.strength.MAX + Math.floor(Math.random() * 20 - 10)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 20 - 10), MAX: bird.strength.MAX + Math.floor(Math.random() * 20 - 10)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 20 - 10), MAX: bird.strength.MAX + Math.floor(Math.random() * 20 - 10)};
+        }
+
+        for(var h = 0; h < genBirds.length; h++){
+            genBirds[h].hardReset();
+        }
+
+
+        birds = genBirds;
+    }
 
     for (var i = 0; i < birds.length; i++) {
         birds[i].reset();
     }
 
+    GEN.innerHTML = "Generation: " + (generation);
+
     pipes = [];
+}
+
+function sort(){
+    genBirds.sort(function(a, b) {
+        return parseFloat(b.score) - parseFloat(a.score);
+    });
 }
 
 globalID = requestAnimationFrame(render);

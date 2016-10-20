@@ -4,6 +4,7 @@ var GRAVITY = .5;
 
 function Bird() {
     this.dead = false;
+    this.score = 0;
 
     this.location = {
         X: 100,
@@ -17,6 +18,14 @@ function Bird() {
     this.strength = {
         MIN: 70,
         MAX: 90
+    };
+
+    this.hardReset = function(){
+        this.score = 0;
+    };
+
+    this.addScore = function (amount) {
+        this.score += amount;
     };
 
     this.reset = function(){
@@ -88,7 +97,5 @@ function Bird() {
 
         self.strength.MIN = min;
         self.strength.MAX = max;
-
-        console.dir(self.strength);
     }).apply(this, arguments);
 }
