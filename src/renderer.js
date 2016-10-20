@@ -60,7 +60,7 @@ for (var i = 0; i < images.length; i++) {
 var globalID;
 var pipes = [];
 
-var toCreate = 0;
+var toCreate = 45;
 
 var lastTime = new Date().getTime(), tick = new Date().getTime();
 var delta = 0, targetUps = 1000 / 60, frames = 0, updates = 0;
@@ -76,8 +76,8 @@ function draw() {
 
             pipe.X -= 2;
 
-            if (pipe.x + 40 < 0) {
-                delete pipes[key];
+            if (pipe.X + 40 < 0) {
+                pipes.splice(key, 1);
             }
         }
     }
@@ -100,6 +100,7 @@ function update() {
         });
     }
 
+    //Our magic number is 90 and 70, but computer has to find that.
     for (var i = 0; i < birds.length; i++) {
         var bird = birds[i];
         var location = bird.location;
@@ -108,10 +109,16 @@ function update() {
         if (Object.keys(pipes).length > 0) {
             var closestPipe = pipes[Object.keys(pipes)[0]];
 
+            if (location.X > closestPipe.X + 45) {
+                closestPipe = pipes[Object.keys(pipes)[1]];
+            }
+
             var d = Math.sqrt((closestPipe.X - location.X) * (closestPipe.X - location.X) + (closestPipe.Y - location.Y) * (closestPipe.Y - location.Y));
 
             console.log(d);
-            if (d > 85 && location.Y > closestPipe.Y) {
+            if (d > 90 && location.Y - 24 > closestPipe.Y) {
+                bird.jump();
+            } else  if (d > 70 && d < 90 && location.X + 34 > closestPipe.X) {
                 bird.jump();
             }
         }
