@@ -21,7 +21,7 @@ var imgMap = {};
 var birds = [];
 var genBirds;
 
-for (var j = 0; j < 25; j++) {
+for (var j = 0; j < 1; j++) {
     birds.push(new Bird());
 }
 
@@ -125,18 +125,29 @@ function update() {
         //Make this first
         if (Object.keys(pipes).length > 0) {
             var closestPipe = pipes[Object.keys(pipes)[0]];
-
-
             if (location.X > closestPipe.X + 45) {
                 closestPipe = pipes[Object.keys(pipes)[1]];
             }
 
-            var d = Math.sqrt((closestPipe.X - location.X) * (closestPipe.X - location.X) + (closestPipe.Y - location.Y) * (closestPipe.Y - location.Y));
+            var center = {
+                X: (closestPipe.X + (closestPipe.X + imgMap['PIPEBOTTOM'].width)) / 2,
+                Y: (closestPipe.Y + (closestPipe.Y + 100)) / 2
+            };
 
-            if (d > bird.strength.MAX && location.Y - 24 > closestPipe.Y) {
-                bird.jump();
-            } else if (d > bird.strength.MIN && d < bird.strength.MAX && location.X + 34 > closestPipe.X) {
-                bird.jump();
+            var xSign = Math.toSign(closestPipe.X - (location.X + imgMap['BIRD'].width)), ySign = Math.toSign(center.Y - (location.Y - imgMap['BIRD'].width));
+            var d = Math.sqrt((center.X - location.X) * (center.X - location.X) + (center.Y - location.Y) * (center.Y - location.Y));
+
+            if (ySign < 0) {
+                console.log(closestPipe.X - location.X);
+                if(xSign > 0){
+                    if(d > 45){
+                        bird.jump();
+                    }
+                }else{
+                    console.log("INSIDE");
+                }
+            }else{
+                "CATS";
             }
         } else {
             var jump = Math.floor(Math.random() * 15);
@@ -249,19 +260,31 @@ function nextGeneration() {
         sort();
 
         console.log("Generation: " + generation);
-        for(var j = 0; j < 5; j++){
+        for (var j = 0; j < 5; j++) {
             var bird = genBirds[j];
             console.log(bird.score + " " + bird.strength.MIN + " " + bird.strength.MAX);
 
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
+            genBirds[4 + (j * 5)].strength = {
+                MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2),
+                MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)
+            };
+            genBirds[4 + (j * 5)].strength = {
+                MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2),
+                MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)
+            };
+            genBirds[4 + (j * 5)].strength = {
+                MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2),
+                MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)
+            };
 
             //Try to find a different optimal route
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * (RANGE * (j + 1))) - (RANGE * (j + 1) / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * (RANGE * (j + 1)) - (RANGE * (j + 1) / 2) )};
+            genBirds[4 + (j * 5)].strength = {
+                MIN: bird.strength.MIN + Math.floor(Math.random() * (RANGE * (j + 1))) - (RANGE * (j + 1) / 2),
+                MAX: bird.strength.MAX + Math.floor(Math.random() * (RANGE * (j + 1)) - (RANGE * (j + 1) / 2))
+            };
         }
 
-        for(var h = 0; h < genBirds.length; h++){
+        for (var h = 0; h < genBirds.length; h++) {
             genBirds[h].hardReset();
         }
 
@@ -278,8 +301,8 @@ function nextGeneration() {
     pipes = [];
 }
 
-function sort(){
-    genBirds.sort(function(a, b) {
+function sort() {
+    genBirds.sort(function (a, b) {
         return parseFloat(b.score) - parseFloat(a.score);
     });
 }
