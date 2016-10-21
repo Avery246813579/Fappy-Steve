@@ -248,6 +248,7 @@ function nextGeneration() {
 
         sort();
 
+        console.log("Generation: " + generation);
         for(var j = 0; j < 5; j++){
             var bird = genBirds[j];
             console.log(bird.score + " " + bird.strength.MIN + " " + bird.strength.MAX);
@@ -257,7 +258,7 @@ function nextGeneration() {
             genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
 
             //Try to find a different optimal route
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * (RANGE * 2.5) - (RANGE * 2.5) / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * (RANGE * 2.5) - (RANGE * 2.5) / 2)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * (RANGE * (j + 1))) - (RANGE * (j + 1) / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * (RANGE * (j + 1)) - (RANGE * (j + 1) / 2) )};
         }
 
         for(var h = 0; h < genBirds.length; h++){
