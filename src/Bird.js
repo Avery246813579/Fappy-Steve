@@ -73,11 +73,11 @@ function Bird() {
         context.translate(img.width / 2, img.height / 2);
 
         if (this.velocity.Y < 0) {
-            context.rotate(-.35);
+            context.rotate(Math.toRadians(-35));
         }
 
         if (this.velocity.Y > 2) {
-            context.rotate(Math.PI/2 * this.location.Y / 365);
+            context.rotate(Math.toRadians(this.location.Y / (GRAVITY * 12)));
         }
 
         context.drawImage(imgMap['BIRD'], -1 * img.width / 2, -1 * img.height / 2);
