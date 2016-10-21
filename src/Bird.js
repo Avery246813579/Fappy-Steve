@@ -90,8 +90,8 @@ function Bird() {
         self.location.Y = Math.floor(Math.random() * 512);
 
         if(typeof min == "undefined" || typeof max == "undefined") {
-            self.strength.MIN = Math.floor(Math.random() * 250);
-            self.strength.MAX = Math.floor(Math.random() * 250);
+            self.strength.MIN = Math.floor(Math.random() * 400);
+            self.strength.MAX = Math.floor(Math.random() * 400);
             return;
         }
 

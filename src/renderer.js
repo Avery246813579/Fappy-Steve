@@ -5,6 +5,7 @@ var FPS = document.getElementById('FPS');
 var UPDATES = document.getElementById('UPDATES');
 var GEN = document.getElementById('GEN');
 var SCORE = document.getElementById('SCORE');
+var RANGE = 40;
 var score = 1;
 
 canvas.width = 288;
@@ -251,10 +252,12 @@ function nextGeneration() {
             var bird = genBirds[j];
             console.log(bird.score + " " + bird.strength.MIN + " " + bird.strength.MAX);
 
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 40 - 20), MAX: bird.strength.MAX + Math.floor(Math.random() * 40 - 20)};
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 40 - 20), MAX: bird.strength.MAX + Math.floor(Math.random() * 40 - 20)};
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 40 - 20), MAX: bird.strength.MAX + Math.floor(Math.random() * 40 - 20)};
-            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * 40 - 20), MAX: bird.strength.MAX + Math.floor(Math.random() * 40 - 20)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * RANGE - RANGE / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * RANGE - RANGE / 2)};
+
+            //Try to find a different optimal route
+            genBirds[4 + (j * 5)].strength = {MIN: bird.strength.MIN + Math.floor(Math.random() * (RANGE * 2.5) - (RANGE * 2.5) / 2), MAX: bird.strength.MAX + Math.floor(Math.random() * (RANGE * 2.5) - (RANGE * 2.5) / 2)};
         }
 
         for(var h = 0; h < genBirds.length; h++){
