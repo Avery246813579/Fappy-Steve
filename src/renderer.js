@@ -21,7 +21,7 @@ var imgMap = {};
 var birds = [];
 var genBirds;
 
-for (var j = 0; j < 1; j++) {
+for (var j = 0; j < 25; j++) {
     birds.push(new Bird());
 }
 
@@ -125,29 +125,18 @@ function update() {
         //Make this first
         if (Object.keys(pipes).length > 0) {
             var closestPipe = pipes[Object.keys(pipes)[0]];
+
+
             if (location.X > closestPipe.X + 45) {
                 closestPipe = pipes[Object.keys(pipes)[1]];
             }
 
-            var center = {
-                X: (closestPipe.X + (closestPipe.X + imgMap['PIPEBOTTOM'].width)) / 2,
-                Y: (closestPipe.Y + (closestPipe.Y + 100)) / 2
-            };
+            var d = Math.sqrt((closestPipe.X - location.X) * (closestPipe.X - location.X) + (closestPipe.Y - location.Y) * (closestPipe.Y - location.Y));
 
-            var xSign = Math.toSign(closestPipe.X - (location.X + imgMap['BIRD'].width)), ySign = Math.toSign(center.Y - (location.Y - imgMap['BIRD'].width));
-            var d = Math.sqrt((center.X - location.X) * (center.X - location.X) + (center.Y - location.Y) * (center.Y - location.Y));
-
-            if (ySign < 0) {
-                console.log(closestPipe.X - location.X);
-                if(xSign > 0){
-                    if(d > 45){
-                        bird.jump();
-                    }
-                }else{
-                    console.log("INSIDE");
-                }
-            }else{
-                "CATS";
+            if (d > bird.strength.MAX && location.Y - 24 > closestPipe.Y) {
+                bird.jump();
+            } else if (d > bird.strength.MIN && d < bird.strength.MAX && location.X + 34 > closestPipe.X) {
+                bird.jump();
             }
         } else {
             var jump = Math.floor(Math.random() * 15);
