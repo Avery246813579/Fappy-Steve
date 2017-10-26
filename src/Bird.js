@@ -87,6 +87,7 @@ function Bird() {
     (function Constructor(min, max) {
         var self = this;
 
+        self.score = 0;
         self.location.Y = Math.floor(Math.random() * 512);
 
         if(typeof min == "undefined" || typeof max == "undefined") {
