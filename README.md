@@ -1,7 +1,5 @@
-# Flappy Evolution
- 
-![Bird](assets/images/bird.png) 
- 
+# Flappy Evolution ![Bird](assets/images/bird.png) 
+  
 Flappy Evolutions is a Javascript Game that uses Machine Learning
 to display the evolutionary theory. This is also called an 
 evolutionary simulator. 
